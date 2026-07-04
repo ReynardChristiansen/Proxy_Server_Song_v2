@@ -1,5 +1,5 @@
 const jiosaavn = require('../services/jiosaavn');
-const { mapSong, mapSongSearchPage } = require('../utils/mappers');
+const { dedupeSongs, mapSong, mapSongSearchPage } = require('../utils/mappers');
 
 const TOP_SONGS_LIMIT = 40;
 
@@ -18,15 +18,12 @@ async function getTopSongs(language) {
     trending = [];
   }
 
-  const seen = new Set(trending.map((song) => song.id));
-  let results = trending;
+  let results = dedupeSongs(trending);
 
   if (results.length < TOP_SONGS_LIMIT) {
     const raw = await jiosaavn.searchSongs(language, 1, TOP_SONGS_LIMIT);
-    const fill = mapSongSearchPage(raw).results.filter(
-      (song) => !seen.has(song.id)
-    );
-    results = [...results, ...fill].slice(0, TOP_SONGS_LIMIT);
+    const fill = mapSongSearchPage(raw).results;
+    results = dedupeSongs([...results, ...fill]).slice(0, TOP_SONGS_LIMIT);
   }
 
   return { total: results.length, start: 1, results };
@@ -56,8 +53,8 @@ const searchSongs = async (req, res) => {
     try {
       const biased = await jiosaavn.searchSongs(`${query} ${language}`, page, limit);
       const pageData = mapSongSearchPage(biased);
-      const filtered = pageData.results.filter(
-        (song) => song.language === language
+      const filtered = dedupeSongs(
+        pageData.results.filter((song) => song.language === language)
       );
       if (filtered.length > 0) {
         return res.json({
@@ -71,7 +68,11 @@ const searchSongs = async (req, res) => {
   }
 
   const raw = await jiosaavn.searchSongs(query, page, limit);
-  res.json({ success: true, data: mapSongSearchPage(raw) });
+  const pageData = mapSongSearchPage(raw);
+  res.json({
+    success: true,
+    data: { ...pageData, results: dedupeSongs(pageData.results) },
+  });
 };
 
 const getSongById = async (req, res) => {

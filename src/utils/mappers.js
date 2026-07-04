@@ -120,9 +120,27 @@ function mapArtistSearchPage(raw) {
   };
 }
 
+/**
+ * JioSaavn returns the same song many times as different releases
+ * (single / album / compilation, each with its own id). Collapse them by
+ * title + primary artist, keeping the first (best-ranked) occurrence.
+ */
+function dedupeSongs(songs) {
+  const seen = new Set();
+  return songs.filter((song) => {
+    const key = `${(song.name || '').toLowerCase().trim()}|${(
+      song.artists?.primary?.[0]?.name || ''
+    ).toLowerCase()}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 module.exports = {
   decodeHtml,
   buildImageUrls,
+  dedupeSongs,
   mapSong,
   mapArtistSearchResult,
   mapArtistPage,
