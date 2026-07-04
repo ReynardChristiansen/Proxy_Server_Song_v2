@@ -1,0 +1,32 @@
+{
+  "name": "proxy-server-song",
+  "version": "2.0.0",
+  "description": "Proxy server for JioSaavn's internal api.php — normalizes responses and decrypts media URLs for the Hirmify frontend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "jiosaavn",
+    "proxy",
+    "music-api"
+  ],
+  "author": "Reynard Christiansen",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.6.0",
+    "globals": "^17.7.0"
+  }
+}

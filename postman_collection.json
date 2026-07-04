@@ -1,0 +1,209 @@
+{
+  "info": {
+    "name": "Proxy Server Song (Hirmify)",
+    "description": "Proxy server untuk JioSaavn api.php — semua respons sukses berbentuk { success: true, data: ... }, error berbentuk { success: false, error: { code, message } }.\n\nJalankan server dulu: npm run start (port 3000).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["{{baseUrl}}"],
+          "path": [""]
+        },
+        "description": "Cek server hidup. Balasan: { success: true, message: 'Music API proxy is running' }"
+      }
+    },
+    {
+      "name": "Songs",
+      "item": [
+        {
+          "name": "Get Top English",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/getTopEnglish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "getTopEnglish"]
+            },
+            "description": "40 lagu English teratas. Frontend pakai: data.results[].name, .label, .id, .image[2].url, .downloadUrl[4].url (320kbps)."
+          }
+        },
+        {
+          "name": "Get Top Hindi",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/getTopHindi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "getTopHindi"]
+            },
+            "description": "40 lagu Hindi teratas. Bentuk sama dengan getTopEnglish."
+          }
+        },
+        {
+          "name": "Search Songs (getSongByParam)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/getSongByParam/tum hi ho?page=1&limit=40",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "getSongByParam", "tum hi ho"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Halaman (opsional, default 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "40",
+                  "description": "Jumlah hasil (opsional, default 40)"
+                }
+              ]
+            },
+            "description": "Cari lagu berdasarkan keyword. Ganti 'tum hi ho' dengan query lain. Balasan: data.{total, start, results[]}."
+          }
+        },
+        {
+          "name": "Get Song By ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/getSongById/94aXyl7V",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "getSongById", "94aXyl7V"]
+            },
+            "description": "Detail lagu by ID. Contoh ID: 94aXyl7V (Once Upon A Time). Balasan: data = ARRAY, frontend pakai data[0].artists.primary[0].id. ID tidak ada -> 404."
+          }
+        },
+        {
+          "name": "Get Lyrics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/lyrics/aRZbUYD7",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lyrics", "aRZbUYD7"]
+            },
+            "description": "Lirik lagu (endpoint baru). Contoh ID: aRZbUYD7 (Tum Hi Ho). Hanya jalan untuk lagu dengan hasLyrics=true."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Artists",
+      "item": [
+        {
+          "name": "Search Artists (getArtistByParam)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/getArtistByParam/arijit?page=1&limit=40",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "getArtistByParam", "arijit"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Halaman (opsional, default 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "40",
+                  "description": "Jumlah hasil (opsional, default 40)"
+                }
+              ]
+            },
+            "description": "Cari artis berdasarkan keyword. Frontend pakai: data.results[].id, .name, .type, .image[0].url."
+          }
+        },
+        {
+          "name": "Get Artist By ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/getArtistById/459320?songs=40",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "getArtistById", "459320"],
+              "query": [
+                {
+                  "key": "songs",
+                  "value": "40",
+                  "description": "Jumlah topSongs (opsional, default 40)"
+                }
+              ]
+            },
+            "description": "Detail artis + top songs. Contoh ID: 459320 (Arijit Singh), 455663 (Anirudh Ravichander). Frontend pakai: data.name, data.followerCount, data.image[2].url, data.topSongs[]."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notify",
+      "item": [
+        {
+          "name": "Submit Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"subject\": \"Test\",\n  \"message\": \"Hello from Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/submitEmail",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "submitEmail"]
+            },
+            "description": "Passthrough ke notification engine eksternal (notifengine idofocus). Body diteruskan apa adanya — sesuaikan field dengan yang diharapkan API tujuan."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Examples",
+      "item": [
+        {
+          "name": "Route Not Found (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/nonexistent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "nonexistent"]
+            },
+            "description": "Contoh bentuk error route: { success: false, error: { code: 404, message: '...' } }"
+          }
+        },
+        {
+          "name": "Song Not Found (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/getSongById/zzzzzzzz",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "getSongById", "zzzzzzzz"]
+            },
+            "description": "Contoh error ID lagu tidak ditemukan."
+          }
+        }
+      ]
+    }
+  ]
+}
