@@ -15,7 +15,4 @@ router.get('/getArtistById/:id', asyncHandler(artists.getArtistById));
 router.get('/getArtistByParam/:id', asyncHandler(artists.searchArtists));
 router.post('/submitEmail', asyncHandler(notify.submitEmail));
 
-// New routes
-router.get('/lyrics/:id', asyncHandler(songs.getLyrics));
-
 module.exports = router;

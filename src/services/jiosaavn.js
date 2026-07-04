@@ -120,8 +120,6 @@ const api = {
       artistId,
       n_song: songCount,
     }),
-
-  getLyrics: (lyricsId) => call('lyrics.getLyrics', { lyrics_id: lyricsId }),
 };
 
 module.exports = { ...api, call, UpstreamError };

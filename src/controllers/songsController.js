@@ -90,16 +90,9 @@ const getSongById = async (req, res) => {
   res.json({ success: true, data: songs });
 };
 
-const getLyrics = async (req, res) => {
-  const { id } = req.params;
-  const raw = await jiosaavn.getLyrics(id);
-  res.json({ success: true, data: raw });
-};
-
 module.exports = {
   getTopEnglish,
   getTopHindi,
   searchSongs,
   getSongById,
-  getLyrics,
 };
